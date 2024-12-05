@@ -1,8 +1,7 @@
 import os
 import re
 
-script_directory = os.path.dirname(os.path.abspath(__file__))
-file_path = os.path.join(script_directory, "day3puzzleinput.txt")
+file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "day3puzzleinput.txt")
 
 def compMul(currMul):
     op_split = str(currMul).split(r',')

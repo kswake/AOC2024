@@ -1,8 +1,7 @@
 import os
 import re
 
-script_directory = os.path.dirname(os.path.abspath(__file__))
-file_path = os.path.join(script_directory, "day3puzzleinput.txt")
+file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "day3puzzleinput.txt")
 
 def compMul(currMul):
     op_split = str(currMul).split(r',')
@@ -17,7 +16,7 @@ condMul_re = re.compile(r'mul\(\d+,\d+\)|do\(\)|don\'t\(\)')
 validCondMuls = re.findall(condMul_re,mem)
 
 mulSum = 0
-mul_enabled = True #by default until "don't()"
+mul_enabled = True
 
 for item in validCondMuls:
     isMul = True
