@@ -1,4 +1,5 @@
 import os
+import atexit
 
 file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),"puzzleInput6test.txt")
 
@@ -6,6 +7,14 @@ with open (file_path, "r") as mapInput:
     mapMaster = mapInput.read().splitlines()
 
 directions = ["^",">","v","<"]
+
+def data_dump():
+    with open (os.path.join(os.path.dirname(os.path.abspath(__file__)),"puzzle6dataDump.txt"),"w") as dumpTarget:
+        for line in mapMaster:
+            for char in line:
+                dumpTarget.write(char)
+
+atexit.register(data_dump)
 
 def get_pos(map): #done - returns [row,col]
     row=0
@@ -80,8 +89,6 @@ def move_pointer(moveFrom, moveTo, currMap): #think this works
     currMap[moveFrom[0]] = newFromLine
     currMap[moveTo[0]] = newToLine
     return currMap
-
-moves = 0
 
 currPos = get_pos(mapMaster)
 currMap = mapMaster
