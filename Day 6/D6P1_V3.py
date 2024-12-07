@@ -4,12 +4,11 @@ with open (os.path.join(os.path.dirname(os.path.abspath(__file__)),"puzzleInput6
     mapState = [list (pos) for pos in input.read().splitlines()]    
 
 directions = ["^",">","v","<"]
-moved_loc = []
 
 def find_curr_pos(map): #returns [x,y] position of the guard on a given map state
     for r in range(len(map)):
         for c in range(len(map[r])):
-            if mapState[r][c] in directions:
+            if map[r][c] in directions:
                 return [r,c]
 
 def find_next_pos(map): #returns [x,y] of next square or [-999,-999] if next square would be out of bounds

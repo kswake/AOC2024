@@ -4,12 +4,19 @@ with open (os.path.join(os.path.dirname(os.path.abspath(__file__)),"puzzleInput6
     mapState = [list (pos) for pos in input.read().splitlines()]    
 
 directions = ["^",">","v","<"]
-moved_loc = []
+inf_loop_locs = []
+
+def write_map_state(map): #only used for dumping state to drive
+    with open (os.path.join(os.path.dirname(os.path.abspath(__file__)),"puzzle6DataDump.txt"), "w") as dumpFile:
+        for line in map:
+            for char in line:
+                dumpFile.write(char)
+            dumpFile.write('\n')
 
 def find_curr_pos(map): #returns [x,y] position of the guard on a given map state
     for r in range(len(map)):
         for c in range(len(map[r])):
-            if mapState[r][c] in directions:
+            if map[r][c] in directions:
                 return [r,c]
 
 def find_next_pos(map): #returns [x,y] of next square or [-999,-999] if next square would be out of bounds
@@ -37,10 +44,17 @@ def rotate_right(map): #returns the map state with a right-rotated guard (e.g. I
         map[currPos[0]][currPos[1]] = directions[directions.index(guard)+1]
     return map
 
-def move(map): #alters map state according to rules, returns new map state as list
+    movesCount = 1
+    for row in map:
+        for location in row:
+            if location == "X":
+                movesCount+=1
+    return movesCount
+
+def move(map): #alters given map state according to rules, returns new map state as list
     currPos = find_curr_pos(map)
     nextPos = find_next_pos(map)
-
+    
     nextContents = map[nextPos[0]][nextPos[1]]
 
     if nextContents == "." or nextContents == "X":
@@ -50,27 +64,27 @@ def move(map): #alters map state according to rules, returns new map state as li
         map = rotate_right(map)
     return map
 
-def count_visited_loc(map): #looks at updated map, counts X's (ONLY NEEDED FOR P1)
-    movesCount = 1
-    for row in map:
-        for location in row:
-            if location == "X":
-                movesCount+=1
-    return movesCount
+def find_infloop(localMap):
+    
+    #add current postion and direction to list of moved positions and directions
+    startPos = find_curr_pos(localMap)
+    prevLocDirs = [startPos[0], startPos[1], localMap[startPos[0]][startPos[1]]]
+    
+    #place the obstacle
+    obsPos = find_next_pos(localMap)
+    localMap[obsPos[0]][obsPos[1]] = "#"
 
-def  write_map_state(map):
-    with open (os.path.join(os.path.dirname(os.path.abspath(__file__)),"puzzle6DataDump.txt"), "w") as dumpFile:
-        for line in map:
-            for char in line:
-                dumpFile.write(char)
-            dumpFile.write('\n')
+    while find_next_pos(localMap) != [-999,-999]:
+        currPos = find_curr_pos(localMap)
+        currLocDir = [currPos[0], currPos[1], localMap[currPos[0]][currPos[1]]]
+        print(currLocDir)
+        print(prevLocDirs)
+        if currLocDir in prevLocDirs:
+            return obsPos
+        prevLocDirs.append(currLocDir)
+    return []
 
-while find_next_pos(mapState) != [-999,-999]:
+while find_next_pos(mapState) != [-999,-999]: 
     move(mapState)
-    #write_map_state(mapState) #NOT NEEDED unless you want a dump file
-
-print(count_visited_loc(mapState))
-write_map_state(mapState)
-
-#AT THIS POINT, MAP IS IN "TRAVERSED" STATE
-
+    localMap = mapState
+    print(find_infloop(localMap))
