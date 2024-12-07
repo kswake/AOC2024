@@ -13,7 +13,6 @@ def get_operator_matrix(numOps):
     return product(['+', '*'], repeat=numOps)
 
 def evaluate_expr(nums, ops):
-    # Evaluate nums with the given sequence of ops from left-to-right
     currResult = nums[0]
     for op, num in zip(ops, nums[1:]):
         if op == "+":

@@ -10,18 +10,18 @@ with open (os.path.join(os.path.dirname(os.path.abspath(__file__)),"d7input.txt"
         calcsMaster.append([result, values_list])
 
 def get_operator_matrix(numOps):
-    return product(['+', '*'], repeat=numOps)
+    return product(['+', '*',"||"], repeat=numOps)
 
 def evaluate_expr(nums, ops):
-    # Evaluate nums with the given sequence of ops from left-to-right
     currResult = nums[0]
     for op, num in zip(ops, nums[1:]):
-        if op == "+":
+        if op == '+':
             currResult = currResult + num
-        else:
+        elif op == '*':
             currResult = currResult * num
+        elif op == '||':
+            currResult = int(str(currResult) + str(num))
     return currResult
-
 
 runningTotal = 0
 for target, nums in calcsMaster:
@@ -37,5 +37,5 @@ for target, nums in calcsMaster:
 
     if solvable:
         runningTotal += target
-
+        
 print(runningTotal)
