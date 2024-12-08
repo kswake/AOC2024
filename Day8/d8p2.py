@@ -1,4 +1,4 @@
-import os
+import os, math
 with open (os.path.join(os.path.dirname(os.path.abspath(__file__)),"d8input.txt"),'r') as input:
     topologyGrid =[]
     for item in input: topologyGrid.append(list(item.strip()))
@@ -21,14 +21,31 @@ def get_like_antenna_pos(anType,x,y,antennaList):
 
 def get_antinodes(antenna):
     antinodes = []
-    curr_x,curr_y = antenna[1],antenna[2]
-    likeAntennas = get_like_antenna_pos(antenna[0],antenna[1],antenna[2],allAntennas)
+    curr_x, curr_y = antenna[1], antenna[2]
+    likeAntennas = get_like_antenna_pos(antenna[0], curr_x, curr_y, allAntennas)
+    
     for likeAnt in likeAntennas:
-        antinode_x = likeAnt[0] + (likeAnt[0] - curr_x)
-        antinode_y = likeAnt[1] + (likeAnt[1] - curr_y)
-        if not (antinode_x < bounds[0] or antinode_y < bounds[0] or antinode_x > bounds[1] or antinode_y > bounds[1]):
-            antinodes.append([antinode_x,antinode_y])
-    return(antinodes)
+        x_diff = likeAnt[0] - curr_x
+        y_diff = likeAnt[1] - curr_y
+
+        g = math.gcd(x_diff, y_diff)
+        step_x = x_diff // g
+        step_y = y_diff // g
+        
+        test_x = curr_x
+        test_y = curr_y
+        while 0 <= test_x <= bounds[1] and 0 <= test_y <= bounds[1]:
+            antinodes.append([test_x, test_y])
+            test_x += step_x
+            test_y += step_y
+        
+        test_x = curr_x - step_x
+        test_y = curr_y - step_y
+        while 0 <= test_x <= bounds[1] and 0 <= test_y <= bounds[1]:
+            antinodes.append([test_x, test_y])
+            test_x -= step_x
+            test_y -= step_y
+    return (antinodes)
 
 allAntennas = get_antenna_list(topologyGrid)
 allAntinodes = []
