@@ -1,8 +1,6 @@
-### this code isn't currently outputting the correct answer, need to revisit it
-
 import os
-from itertools import cycle
 
+#load dense file into sparse format
 idNum, fsChk, sparseMap = 0, 1, []
 with open (os.path.join(os.path.dirname(os.path.abspath(__file__)),"d9input.txt"),'r') as denseMap:
     for num in denseMap.read():
@@ -15,30 +13,24 @@ with open (os.path.join(os.path.dirname(os.path.abspath(__file__)),"d9input.txt"
                 sparseMap.append(".")
         fsChk+=1
 
-reverseNums =[]
-dotcount=0
-sparse_reversed = list(reversed(sparseMap))
-for x in sparse_reversed:
-    if x != ".":
-        reverseNums.append(x)
-    else:
-        dotcount+=1
-revCycle = cycle(reverseNums)
-
-for loc in range(len(sparseMap)):
-    if loc < dotcount:
-        if sparseMap[loc] == ".":
-            sparseMap[loc] = next(revCycle)
-
-finalMap = []
+#reorg sparse format
+endpoint = len(sparseMap)-1
 for i in range(len(sparseMap)):
     if sparseMap[i] == ".":
+        for j in range(endpoint, i, -1):
+            if sparseMap[j] != ".":
+                sparseMap[i] = sparseMap[j]
+                sparseMap[j] = "."
+                endpoint = j
+                break
+    if i>=endpoint:
+        break
+
+checksum=0
+for x in range(len(sparseMap)):
+    if sparseMap[x] == ".":
         break
     else:
-        finalMap.append(sparseMap[i])
+        checksum+=x*sparseMap[x]
 
-checkSum = 0
-for z in range(len(finalMap)):
-    checkSum += z * finalMap[z]
-
-print(checkSum)
+print(checksum)
