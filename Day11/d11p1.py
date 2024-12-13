@@ -34,7 +34,7 @@ def blink(stones):
             stones.insert(insertable[0]+offset,insertable[1])
             offset+=1
 
-for i in range(0,75):
+for i in range(0,25):
     blink(stones)
 
 print(len(stones))

@@ -1,40 +1,47 @@
-stones = str("3 386358 86195 85 1267 3752457 0 741").split()
+from collections import Counter
 
-def blink(stones):
-    insertables = []
-    for position in range(len(stones)):
+memo = {}
 
-        if int(stones[position]) == 0:
+def split_even_digits(stone_str):
+    length = len(stone_str)
+    half = length // 2
+    left_part = stone_str[:half]
+    right_part = stone_str[half:]
+    left_num = str(int(left_part))
+    right_num = str(int(right_part))
+    return left_num, right_num
 
-            stones[position] = 1
-
-        elif len(str(stones[position]))%2==0:
-
-            splitStones = [d for d in str(stones[position])]
-            stone1_digits = splitStones[int(len(splitStones)/2):]
-            stone1 = ""
-            for i in range(len(stone1_digits)):
-                stone1 += str(stone1_digits[i])
-            stones[position]=int(stone1)
-
-            stone2_digits = splitStones[:int(len(splitStones)/2)]
-            stone2 = ""
-            for j in range(len(stone2_digits)):
-                stone2 += str(stone2_digits[j])
-            stone2 = int(stone2)
-            insertables.append([position, int(stone2)])
-
+def transform_once(stone_str):
+    if stone_str == "0":
+        return ["1"]
+    else:
+        length = len(stone_str)
+        if length % 2 == 0:
+            left_num, right_num = split_even_digits(stone_str)
+            return [left_num, right_num]
         else:
+            val = int(stone_str) * 2024
+            return [str(val)]
 
-            stones[position] = int(stones[position]) * 2024
-  
-    offset = 0
-    if insertables is not None: 
-        for insertable in insertables:
-            stones.insert(insertable[0]+offset,insertable[1])
-            offset+=1
+def evolve(stone, steps):
+    if steps == 0:
+        return Counter([stone])
+    key = (stone, steps)
+    if key in memo:
+        return memo[key]
+    new_stones = transform_once(stone)
+    result_counter = Counter()
+    for st in new_stones:
+        result_counter.update(evolve(st, steps - 1))
 
-for i in range(0,25):
-    blink(stones)
+    memo[key] = result_counter
+    return result_counter
 
-print(len(stones))
+initial_stones = "3 386358 86195 85 1267 3752457 0 741".split()
+steps = 75
+
+final_distribution = Counter()
+for st in initial_stones:
+    final_distribution.update(evolve(st, steps))
+
+print(sum(final_distribution.values()))
